@@ -7,7 +7,7 @@
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
     <flow name="register" doc:name="register">
-        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="register" doc:name="HTTP"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
         <echo-component doc:name="Echo"/>
     </flow>
 </mule>
