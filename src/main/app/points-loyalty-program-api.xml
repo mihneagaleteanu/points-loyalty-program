@@ -63,7 +63,7 @@ if (flowVars.amount > 0) {
 SET "POINTSEARNED"=#[flowVars.earnedPoints], "POINTSGRANTED"=#[flowVars.grantedPoints],"POINTSGIVEN"=#[flowVars.givenPoints]
 WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
                         </db:update>
-                        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;}" doc:name="Set Success"/>
+                        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;transactionId&quot;:&quot;#[server.nanoTime()]&quot;}" doc:name="Set Success"/>
                     </when>
                     <otherwise>
                         <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;Insufficient Points&quot;}" doc:name="Set Error"/>
