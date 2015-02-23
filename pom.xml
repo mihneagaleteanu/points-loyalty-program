@@ -305,11 +305,6 @@
       <version>${mule.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.espn.mule.connector.api</groupId>
-      <artifactId>espn-api-connector</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
 
     <!-- for testing -->
     <dependency>
