@@ -61,15 +61,14 @@ public class MuleLauncher {
 
     private static FilenameFilter mFlowFilenameFilter = new FilenameFilter()  {
             public boolean accept(File dir, String name)  {
-                return (name.endsWith(".mflow"));
+                return (name.endsWith(".xml"));
             }
         };
 
     private static MuleContext buildMuleContext() throws ConfigurationException, InitialisationException {
         File flowDir = new File("flows");
         ArrayList<String> muleConfigList = new ArrayList<String>();
-        muleConfigList.add("mule-config.xml");
-
+        
         if (flowDir.exists() && flowDir.isDirectory())  {
             String[] flowFilenames = flowDir.list(mFlowFilenameFilter);
             if (flowFilenames != null && flowFilenames.length > 0)  {
