@@ -88,9 +88,12 @@ public class MuleLauncher {
     }
 
     public static void main(final String[] args) throws Exception {
-                      
+    	                     
         System.getProperties().put("http.port", args[0]);
-        System.getProperties().put("database.url", "jdbc:"+args[1]);
+        URI dbUri = new URI(args[1]); 
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        System.getProperties().put("database.url", "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath()+"?user="+username+"&password="+password);
 
         muleContext = buildMuleContext();
         muleContext.start();
