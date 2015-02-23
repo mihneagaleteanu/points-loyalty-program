@@ -1,1 +1,1 @@
-web:    java -cp target/classes:target/dependency/* MuleLauncher
+web:    java -cp target/classes:target/lib/* MuleLauncher
