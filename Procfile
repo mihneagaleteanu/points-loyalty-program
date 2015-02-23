@@ -1,1 +1,1 @@
-web:    java -cp target/classes:target/lib/* MuleLauncher $PORT
+web:    java -cp target/classes:target/lib/* MuleLauncher $PORT $DATABASE_URL

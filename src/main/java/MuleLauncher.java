@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.mule.api.MuleContext;
@@ -92,7 +92,18 @@ public class MuleLauncher {
         if (args.length > 0)  {
             port = args[0];
         }
+                       
+        String dbURL = "postgresql://postgres:Mirka20@localhost:5432";
+        if (args.length > 1)  {
+        	dbURL = args[1];
+        }
+        URI dbUri = new URI(dbURL);
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+
         System.getProperties().put("http.port", port);
+        System.getProperties().put("database.url", "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath()+"?user="+username+"&password="+password);
 
         muleContext = buildMuleContext();
         muleContext.start();

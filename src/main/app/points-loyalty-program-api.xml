@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="CE-3.5.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-    <flow name="register" doc:name="register">
-        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
-        <echo-component doc:name="Echo"/>
-    </flow>
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <db:generic-config name="PLPMEMBERS_Database_Configuration" url="${database.url}" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
     <flow name="member-validation" doc:name="member-validation">
-        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" doc:name="HTTP"/>
-        <set-payload value="{&quot;status&quot;:&quot;success&quot;}" doc:name="Set Payload"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="member-validation" doc:name="HTTP"/>
+        <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
+        </db:select>
+        <choice doc:name="Choice">
+            <when expression="#[payload.size() == 1]">
+                <set-variable variableName="member" value="#[payload[0]]" doc:name="Save Member"/>
+                <expression-component doc:name="Calculate Balance"><![CDATA[flowVars.balance = flowVars.member["POINTSEARNED"]  + flowVars.member["POINTSGRANTED"] - flowVars.member["POINTSGIVEN"];]]></expression-component>
+                <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;firstName&quot;:&quot;#[flowVars.member[&quot;FIRSTNAME&quot;]]&quot;,&quot;lastName&quot;:&quot;#[flowVars.member[&quot;LASTNAME&quot;]]&quot;,&quot;balance&quot;:#[flowVars.balance]}" doc:name="Set Payload"/>
+            </when>
+            <otherwise>
+                <set-payload value="{&quot;status&quot;:&quot;failure&quot;}" doc:name="Set Error"/>
+            </otherwise>
+        </choice>
         <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
     </flow>
 </mule>

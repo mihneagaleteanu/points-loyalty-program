@@ -325,6 +325,13 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- postgres -->
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>9.0-801.jdbc4</version>
+    </dependency>
   </dependencies>
 
   <repositories>
