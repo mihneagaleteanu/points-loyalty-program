@@ -14,14 +14,64 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
         </db:select>
-        <choice doc:name="Choice">
+        <choice doc:name="Is Member Known?">
             <when expression="#[payload.size() == 1]">
                 <set-variable variableName="member" value="#[payload[0]]" doc:name="Save Member"/>
                 <expression-component doc:name="Calculate Balance"><![CDATA[flowVars.balance = flowVars.member["POINTSEARNED"]  + flowVars.member["POINTSGRANTED"] - flowVars.member["POINTSGIVEN"];]]></expression-component>
-                <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;firstName&quot;:&quot;#[flowVars.member[&quot;FIRSTNAME&quot;]]&quot;,&quot;lastName&quot;:&quot;#[flowVars.member[&quot;LASTNAME&quot;]]&quot;,&quot;balance&quot;:#[flowVars.balance]}" doc:name="Set Payload"/>
+                <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;firstName&quot;:&quot;#[flowVars.member[&quot;FIRSTNAME&quot;]]&quot;,&quot;lastName&quot;:&quot;#[flowVars.member[&quot;LASTNAME&quot;]]&quot;,&quot;balance&quot;:#[flowVars.balance],&quot;pointsEarned&quot;:#[flowVars.member[&quot;POINTSEARNED&quot;]],&quot;pointsGranted&quot;:#[flowVars.member[&quot;POINTSGRANTED&quot;]],&quot;pointsGiven&quot;:#[flowVars.member[&quot;POINTSGIVEN&quot;]]}" doc:name="Set Payload"/>
             </when>
             <otherwise>
-                <set-payload value="{&quot;status&quot;:&quot;failure&quot;}" doc:name="Set Error"/>
+                <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;UNKNOWN_MEMBER&quot;}" doc:name="Set Error"/>
+            </otherwise>
+        </choice>
+        <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
+    </flow>
+    <flow name="posting" doc:name="posting">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="posting" doc:name="HTTP"/>
+        <json:json-to-object-transformer doc:name="JSON to Object"/>
+        <set-variable variableName="amount" value="#[Integer.parseInt(payload.get(&quot;amount&quot;))]" doc:name="Save Amount"/>
+        <set-variable variableName="pic" value="#[payload.get(&quot;pic&quot;).toString().replaceAll(&quot;\&quot;&quot;,&quot;&quot;)]" doc:name="Save PIC"/>
+        <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[select "MEMBERID","POINTSEARNED","POINTSGRANTED","POINTSGIVEN" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
+        </db:select>
+        <choice doc:name="Is Member Known?">
+            <when expression="#[payload.size() == 1]">
+                <set-variable variableName="member" value="#[payload[0]]" doc:name="Save Member"/>
+                <set-variable variableName="availablePoints" value="#[Integer.parseInt(flowVars.member.get(&quot;POINTSEARNED&quot;)+flowVars.member.get(&quot;POINTSGRANTED&quot;)-flowVars.member.get(&quot;POINTSGIVEN&quot;))]" doc:name="Calculate available points"/>
+                <choice doc:name="Does Member Have Sufficient Points?">
+                    <when expression="#[flowVars.amount &lt;= flowVars.availablePoints]">
+                        <expression-component doc:name="Update Member"><![CDATA[flowVars.grantedPoints = flowVars.member["POINTSGRANTED"];
+flowVars.earnedPoints = flowVars.member["POINTSEARNED"];
+flowVars.givenPoints = flowVars.member["POINTSGIVEN"];
+if (flowVars.amount > 0) {
+	if ("GRANT" == flowVars.pic) {
+		flowVars.grantedPoints = flowVars.grantedPoints + flowVars.amount;		
+	} else {
+    	flowVars.earnedPoints = flowVars.earnedPoints + flowVars.amount;		
+	}
+} else {
+	flowVars.givenPoints = flowVars.givenPoints-flowVars.amount;
+	if (-1 * flowVars.amount <= flowVars.grantedPoints) {
+		flowVars.grantedPoints = flowVars.grantedPoints+flowVars.amount;
+	} else {
+		flowVars.earnedPoints = flowVars.earnedPoints - (-1*flowVars.amount-flowVars.grantedPoints);
+		flowVars.grantedPoints = 0;
+	}
+}]]></expression-component>
+                        <db:update config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+                            <db:parameterized-query><![CDATA[UPDATE "PLPMEMBERS"
+SET "POINTSEARNED"=#[flowVars.earnedPoints], "POINTSGRANTED"=#[flowVars.grantedPoints],"POINTSGIVEN"=#[flowVars.givenPoints]
+WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
+                        </db:update>
+                        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;}" doc:name="Set Success"/>
+                    </when>
+                    <otherwise>
+                        <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;Insufficient Points&quot;}" doc:name="Set Error"/>
+                    </otherwise>
+                </choice>
+            </when>
+            <otherwise>
+                <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;UNKNOWN_MEMBER&quot;}" doc:name="Set Error"/>
             </otherwise>
         </choice>
         <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
