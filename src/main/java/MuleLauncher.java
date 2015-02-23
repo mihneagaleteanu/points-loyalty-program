@@ -88,22 +88,9 @@ public class MuleLauncher {
     }
 
     public static void main(final String[] args) throws Exception {
-        String port = "8080";
-        if (args.length > 0)  {
-            port = args[0];
-        }
-                       
-        String dbURL = "postgresql://postgres:Mirka20@localhost:5432";
-        if (args.length > 1)  {
-        	dbURL = args[1];
-        }
-        URI dbUri = new URI(dbURL);
-
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-
-        System.getProperties().put("http.port", port);
-        System.getProperties().put("database.url", "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath()+"?user="+username+"&password="+password);
+                      
+        System.getProperties().put("http.port", args[0]);
+        System.getProperties().put("database.url", "jdbc:"+args[1]);
 
         muleContext = buildMuleContext();
         muleContext.start();
