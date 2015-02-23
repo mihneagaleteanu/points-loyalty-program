@@ -66,18 +66,19 @@ public class MuleLauncher {
         };
 
     private static MuleContext buildMuleContext() throws ConfigurationException, InitialisationException {
-        File flowDir = new File("flows");
+        //File flowDir = new File("flows");
         ArrayList<String> muleConfigList = new ArrayList<String>();
+        muleConfigList.add("points-loyalty-program-api.xml");
         
-        if (flowDir.exists() && flowDir.isDirectory())  {
-            String[] flowFilenames = flowDir.list(mFlowFilenameFilter);
-            if (flowFilenames != null && flowFilenames.length > 0)  {
-                for (int i = 0; i < flowFilenames.length; i++)  {
-                    flowFilenames[i] = "flows/" + flowFilenames[i];
-                }
-                muleConfigList.addAll(Arrays.asList(flowFilenames));
-            }
-        }
+//        if (flowDir.exists() && flowDir.isDirectory())  {
+//            String[] flowFilenames = flowDir.list(mFlowFilenameFilter);
+//            if (flowFilenames != null && flowFilenames.length > 0)  {
+//                for (int i = 0; i < flowFilenames.length; i++)  {
+//                    flowFilenames[i] = "flows/" + flowFilenames[i];
+//                }
+//                muleConfigList.addAll(Arrays.asList(flowFilenames));
+//            }
+//        }
 
         String[] muleConfigArray = muleConfigList.toArray(new String[muleConfigList.size()]);
         SpringXmlConfigurationBuilder configBuilder = new SpringXmlConfigurationBuilder(muleConfigArray);
