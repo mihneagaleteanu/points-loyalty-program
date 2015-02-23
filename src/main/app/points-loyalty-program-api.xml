@@ -11,6 +11,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
     <db:generic-config name="PLPMEMBERS_Database_Configuration" url="${database.url}" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
     <flow name="member-validation" doc:name="member-validation">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="member-validation" doc:name="HTTP"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
         <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
         </db:select>
