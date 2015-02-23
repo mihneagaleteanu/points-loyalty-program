@@ -10,4 +10,9 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
         <echo-component doc:name="Echo"/>
     </flow>
+    <flow name="member-validation" doc:name="member-validation">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" doc:name="HTTP"/>
+        <set-payload value="{&quot;status&quot;:&quot;success&quot;}" doc:name="Set Payload"/>
+        <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
+    </flow>
 </mule>
