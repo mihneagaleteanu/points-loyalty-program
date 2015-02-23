@@ -76,4 +76,12 @@ WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
         </choice>
         <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
     </flow>
+    <flow name="register" doc:name="register">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
+        <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[INSERT INTO "PLPMEMBERS" ("MEMBERID","FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN")
+VALUES (#[json:memberId],#[json:firstName],#[json:lastName],0,#[json:points],0);]]></db:parameterized-query>
+        </db:insert>
+        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Status&quot;}" doc:name="Set Payload"/>
+    </flow>
 </mule>
