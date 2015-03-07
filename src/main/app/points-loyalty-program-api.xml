@@ -15,7 +15,8 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     <spring:beans>
         <security:authentication-manager alias="basicAuth">  
             <security:authentication-provider> 
-                <security:user-service id="authService">                     
+                <security:user-service id="authService">   
+                	<security:user name="admin" password="admin" locked="true" authorities="ROLE_ADMIN"/>                  
                     <security:user name="points" password="points" authorities="ROLE_USER"/> 
                 </security:user-service> 
             </security:authentication-provider> 

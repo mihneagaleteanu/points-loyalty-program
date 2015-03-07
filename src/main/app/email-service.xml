@@ -15,7 +15,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
             <security:authentication-provider> 
                 <security:user-service id="authServiceEmail">                     
                     <security:user name="admin" password="admin" locked="true" authorities="ROLE_ADMIN"/>
-                    <security:user name="${api.user}" password="${api.password}" authorities="ROLE_USER"/>  
+                    <security:user name="points" password="points" authorities="ROLE_USER"/>  
                 </security:user-service> 
             </security:authentication-provider> 
         </security:authentication-manager>
@@ -25,7 +25,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     </spring-security:security-manager>
     <flow name="send-email" doc:name="send-email">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="emails" doc:name="HTTP">
-        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider-email"/>
+        	<!-- spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider-email"/-->
         </http:inbound-endpoint>
         <enricher doc:name="Message Enricher" source="#[payload]" target="#[flowVars.token]">
             <flow-ref name="get-token" doc:name="Flow Reference"/>
