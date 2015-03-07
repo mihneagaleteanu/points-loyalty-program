@@ -14,9 +14,8 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <security:authentication-manager alias="basicAuthEmail">  
             <security:authentication-provider> 
                 <security:user-service id="authServiceEmail">                     
-                    <security:user name="admin" password="admin" locked="true" authorities="ROLE_ADMIN"/>  
-                    <security:user name="user" password="password" disabled="true" authorities="ROLE_USER"/>  
-                    <security:user name="test" password="password" authorities="ROLE_USER"/>  
+                    <security:user name="admin" password="admin" locked="true" authorities="ROLE_ADMIN"/>
+                    <security:user name="${api.user}" password="${api.password}" authorities="ROLE_USER"/>  
                 </security:user-service> 
             </security:authentication-provider> 
         </security:authentication-manager>
