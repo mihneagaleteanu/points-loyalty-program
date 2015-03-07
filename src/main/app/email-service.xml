@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <https:outbound-endpoint exchange-pattern="request-response" host="www.exacttargetapis.com" port="443" path="messaging/v1/messageDefinitionSends/key:plp_gift_confirmation/send" method="POST" doc:name="Send Email"/>
     </flow>
     <flow name="get-token" doc:name="get-token">
-        <set-payload value="{&quot;clientId&quot;:&quot;nruq6ugrdk4ns2k6jtncbmyr&quot;,&quot;clientSecret&quot;:&quot;cqtPRCfbWU29FxMVhzzRxZaY&quot;}" doc:name="Set Payload"/>
+        <set-payload value="{&quot;clientId&quot;:&quot;${email.client.id}&quot;,&quot;clientSecret&quot;:&quot;${email.client.secret}&quot;}" doc:name="Set Payload"/>
         <https:outbound-endpoint exchange-pattern="request-response" host="auth.exacttargetapis.com" port="443" path="v1/requestToken" method="POST" doc:name="Get Token" contentType="application/json"/>
         <set-payload value="Bearer #[json:accessToken]" doc:name="Set Payload"/>
     </flow>
