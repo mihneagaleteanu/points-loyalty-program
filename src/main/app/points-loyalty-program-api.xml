@@ -16,7 +16,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <security:authentication-manager alias="basicAuth">  
             <security:authentication-provider> 
                 <security:user-service id="authService">                     
-                    <security:user name="${api.user}" password="${api.password}" authorities="ROLE_USER"/> 
+                    <security:user name="points" password="points" authorities="ROLE_USER"/> 
                 </security:user-service> 
             </security:authentication-provider> 
         </security:authentication-manager>
