@@ -3,14 +3,31 @@
 <mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="CE-3.5.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:spring-security="http://www.mulesoft.org/schema/mule/spring-security"
+  	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd 
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
     <db:generic-config name="PLPMEMBERS_Database_Configuration" url="${database.url}" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
+    <spring:beans>
+        <security:authentication-manager alias="basicAuth">  
+            <security:authentication-provider> 
+                <security:user-service id="authService">                     
+                    <security:user name="${api.user}" password="${api.password}" authorities="ROLE_USER"/> 
+                </security:user-service> 
+            </security:authentication-provider> 
+        </security:authentication-manager>
+    </spring:beans>
+    <spring-security:security-manager>
+        <spring-security:delegate-security-provider name="memory-provider" delegate-ref="basicAuth"/>
+    </spring-security:security-manager>
     <flow name="member-validation" doc:name="member-validation">
-        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="member-validation" doc:name="HTTP"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="member-validation" doc:name="HTTP">
+        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/>
+        </http:inbound-endpoint>
         <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","MEMBERID" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
         </db:select>
@@ -27,7 +44,9 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
     </flow>
     <flow name="posting" doc:name="posting">
-        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="posting" doc:name="HTTP"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="posting" doc:name="HTTP">
+        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/>        
+        </http:inbound-endpoint>
         <json:json-to-object-transformer doc:name="JSON to Object"/>
         <set-variable variableName="amount" value="#[Integer.parseInt(payload.get(&quot;amount&quot;))]" doc:name="Save Amount"/>
         <set-variable variableName="pic" value="#[payload.get(&quot;pic&quot;).toString().replaceAll(&quot;\&quot;&quot;,&quot;&quot;)]" doc:name="Save PIC"/>
@@ -83,7 +102,9 @@ VALUES (#[flowVars.transactionId],#[flowVars.member["MEMBERID"]],#[flowVars.amou
         <http:response-builder status="200" contentType="application/json" doc:name="HTTP Response Builder"/>
     </flow>
     <flow name="register" doc:name="register">
-        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP">
+        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/>        
+        </http:inbound-endpoint>
         <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[INSERT INTO "PLPMEMBERS" ("MEMBERID","FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","PICTURE")
 VALUES (#[json:memberId],#[json:firstName],#[json:lastName],0,#[json:points],0,#[json:picture]);]]></db:parameterized-query>
