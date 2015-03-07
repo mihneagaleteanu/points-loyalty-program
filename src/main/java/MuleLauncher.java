@@ -97,6 +97,8 @@ public class MuleLauncher {
         System.getProperties().put("database.url", "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath()+"?user="+username+"&password="+password);
         System.getProperties().put("email.client.id", args[2]);
         System.getProperties().put("email.client.secret", args[3]);
+        System.getProperties().put("api.user", args[4]);
+        System.getProperties().put("api.password", args[3]);
         muleContext = buildMuleContext();
         muleContext.start();
     }

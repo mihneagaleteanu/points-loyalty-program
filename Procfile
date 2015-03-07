@@ -1,1 +1,1 @@
-web:    java -cp target/classes:target/lib/* MuleLauncher $PORT $DATABASE_URL $EMAIL_CLIENT_ID $EMAIL_CLIENT_SECRET
+web:    java -cp target/classes:target/lib/* MuleLauncher $PORT $DATABASE_URL $EMAIL_CLIENT_ID $EMAIL_CLIENT_SECRET $API_USERNAME $API_PASSWORD
