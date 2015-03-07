@@ -317,6 +317,12 @@
       <version>${mule.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mule.modules</groupId>
+      <artifactId>mule-module-spring-security</artifactId>
+      <version>${mule.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- for testing -->
     <dependency>
