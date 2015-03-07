@@ -10,7 +10,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
     <flow name="send-email" doc:name="send-email">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="emails" doc:name="HTTP"/>
-        <json:json-to-object-transformer doc:name="JSON to Object"/>
         <enricher doc:name="Message Enricher" source="#[payload]" target="#[flowVars.token]">
             <flow-ref name="get-token" doc:name="Flow Reference"/>
         </enricher>
@@ -25,5 +24,9 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
         <set-payload value="{&quot;clientId&quot;:&quot;nruq6ugrdk4ns2k6jtncbmyr&quot;,&quot;clientSecret&quot;:&quot;cqtPRCfbWU29FxMVhzzRxZaY&quot;}" doc:name="Set Payload"/>
         <https:outbound-endpoint exchange-pattern="request-response" host="auth.exacttargetapis.com" port="443" path="v1/requestToken" method="POST" doc:name="Get Token"/>
         <set-payload value="Bearer #[json:accessToken]" doc:name="Set Payload"/>
+    </flow>
+    <flow name="email-serviceFlow1" doc:name="email-serviceFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="test" doc:name="HTTP"/>
+        <flow-ref name="get-token" doc:name="Flow Reference"/>
     </flow>
 </mule>
