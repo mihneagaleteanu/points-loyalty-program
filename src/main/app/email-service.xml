@@ -27,6 +27,7 @@ http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/ht
     </flow>
     <flow name="email-serviceFlow1" doc:name="email-serviceFlow1">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="test" doc:name="HTTP"/>
-        <flow-ref name="get-token" doc:name="Flow Reference"/>
+        <set-payload value="{&quot;clientId&quot;:&quot;nruq6ugrdk4ns2k6jtncbmyr&quot;,&quot;clientSecret&quot;:&quot;cqtPRCfbWU29FxMVhzzRxZaY&quot;}" doc:name="Copy_of_Set Payload"/>
+        <https:outbound-endpoint exchange-pattern="request-response" host="auth.exacttargetapis.com" port="443" path="v1/requestToken" method="POST" doc:name="Copy_of_Get Token"/>
     </flow>
 </mule>
