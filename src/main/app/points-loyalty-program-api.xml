@@ -62,8 +62,14 @@ if (flowVars.amount > 0) {
                             <db:parameterized-query><![CDATA[UPDATE "PLPMEMBERS"
 SET "POINTSEARNED"=#[flowVars.earnedPoints], "POINTSGRANTED"=#[flowVars.grantedPoints],"POINTSGIVEN"=#[flowVars.givenPoints]
 WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
+
                         </db:update>
-                        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;transactionId&quot;:&quot;#[server.nanoTime()]&quot;}" doc:name="Set Success"/>
+                        <set-variable variableName="transactionId" value="#[function:uuid] " doc:name="Generate UUID"/>
+                        <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+                            <db:parameterized-query><![CDATA[INSERT INTO "PLPTRANSACTIONS" ("TRANSACTIONID","MEMBERID","AMOUNT","PIC")
+VALUES (#[flowVars.transactionId],#[json:memberId],#[flowVars.amount],#[flowVars.pic]);]]></db:parameterized-query>
+                        </db:insert>
+                        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;transactionId&quot;:&quot;#[flowVars.transactionId]&quot;}" doc:name="Set Success"/>
                     </when>
                     <otherwise>
                         <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;Insufficient Points&quot;}" doc:name="Set Error"/>
