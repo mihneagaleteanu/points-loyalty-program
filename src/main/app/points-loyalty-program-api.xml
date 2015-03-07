@@ -103,7 +103,7 @@ VALUES (#[flowVars.transactionId],#[flowVars.member["MEMBERID"]],#[flowVars.amou
     </flow>
     <flow name="register" doc:name="register">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP">
-        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/>        
+        	<!-- spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/-->        
         </http:inbound-endpoint>
         <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[INSERT INTO "PLPMEMBERS" ("MEMBERID","FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","PICTURE")

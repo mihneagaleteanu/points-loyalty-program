@@ -24,7 +24,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     </spring-security:security-manager>
     <flow name="send-email" doc:name="send-email">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="emails" doc:name="HTTP">
-        	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider-email"/>
+        	<!-- spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider-email"/-->
         </http:inbound-endpoint>
         <enricher doc:name="Message Enricher" source="#[payload]" target="#[flowVars.token]">
             <flow-ref name="get-token" doc:name="Flow Reference"/>
