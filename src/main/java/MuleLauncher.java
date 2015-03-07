@@ -69,6 +69,7 @@ public class MuleLauncher {
         //File flowDir = new File("flows");
         ArrayList<String> muleConfigList = new ArrayList<String>();
         muleConfigList.add("points-loyalty-program-api.xml");
+        muleConfigList.add("email-service.xml");
         
 //        if (flowDir.exists() && flowDir.isDirectory())  {
 //            String[] flowFilenames = flowDir.list(mFlowFilenameFilter);
