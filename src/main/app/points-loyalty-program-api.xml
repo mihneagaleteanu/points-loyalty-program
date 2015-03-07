@@ -67,7 +67,7 @@ WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
                         <set-variable variableName="transactionId" value="#[function:uuid] " doc:name="Generate UUID"/>
                         <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
                             <db:parameterized-query><![CDATA[INSERT INTO "PLPTRANSACTIONS" ("TRANSACTIONID","MEMBERID","AMOUNT","PIC")
-VALUES (#[flowVars.transactionId],#[json:memberId],#[flowVars.amount],#[flowVars.pic]);]]></db:parameterized-query>
+VALUES (#[flowVars.transactionId],#[flowVars.member["MEMBERID"]],#[flowVars.amount],#[flowVars.pic]);]]></db:parameterized-query>
                         </db:insert>
                         <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;transactionId&quot;:&quot;#[flowVars.transactionId]&quot;}" doc:name="Set Success"/>
                     </when>
