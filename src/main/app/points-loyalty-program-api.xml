@@ -18,7 +18,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
             <when expression="#[payload.size() == 1]">
                 <set-variable variableName="member" value="#[payload[0]]" doc:name="Save Member"/>
                 <expression-component doc:name="Calculate Balance"><![CDATA[flowVars.balance = flowVars.member["POINTSEARNED"]  + flowVars.member["POINTSGRANTED"];]]></expression-component>
-                <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;firstName&quot;:&quot;#[flowVars.member[&quot;FIRSTNAME&quot;]]&quot;,&quot;lastName&quot;:&quot;#[flowVars.member[&quot;LASTNAME&quot;]]&quot;,&quot;balance&quot;:#[flowVars.balance],&quot;pointsEarned&quot;:#[flowVars.member[&quot;POINTSEARNED&quot;]],&quot;pointsGranted&quot;:#[flowVars.member[&quot;POINTSGRANTED&quot;]],&quot;pointsGiven&quot;:#[flowVars.member[&quot;POINTSGIVEN&quot;]]}" doc:name="Set Payload"/>
+                <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Success&quot;,&quot;firstName&quot;:&quot;#[flowVars.member[&quot;FIRSTNAME&quot;]]&quot;,&quot;lastName&quot;:&quot;#[flowVars.member[&quot;LASTNAME&quot;]]&quot;,&quot;balance&quot;:#[flowVars.balance],&quot;pointsEarned&quot;:#[flowVars.member[&quot;POINTSEARNED&quot;]],&quot;pointsGranted&quot;:#[flowVars.member[&quot;POINTSGRANTED&quot;]],&quot;pointsGiven&quot;:#[flowVars.member[&quot;POINTSGIVEN&quot;]],&quot;picture&quot;:&quot;#[flowVars.member[&quot;PICTURE&quot;]]&quot;}" doc:name="Set Payload"/>
             </when>
             <otherwise>
                 <set-payload value="{&quot;status&quot;:&quot;failure&quot;,&quot;statusMessage&quot;:&quot;UNKNOWN_MEMBER&quot;}" doc:name="Set Error"/>
@@ -79,8 +79,9 @@ WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
     <flow name="register" doc:name="register">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="register" doc:name="HTTP"/>
         <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[INSERT INTO "PLPMEMBERS" ("MEMBERID","FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN")
-VALUES (#[json:memberId],#[json:firstName],#[json:lastName],0,#[json:points],0);]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[INSERT INTO "PLPMEMBERS" ("MEMBERID","FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","PICTURE")
+VALUES (#[json:memberId],#[json:firstName],#[json:lastName],0,#[json:points],0,#[json:picture]);]]></db:parameterized-query>
+
         </db:insert>
         <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Status&quot;}" doc:name="Set Payload"/>
     </flow>
