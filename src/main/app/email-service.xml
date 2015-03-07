@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:https="http://www.mulesoft.org/schema/mule/https" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="CE-3.5.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/https http://www.mulesoft.org/schema/mule/https/current/mule-https.xsd">
     <flow name="send-email" doc:name="send-email">
         <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="emails" doc:name="HTTP"/>
-        <echo-component doc:name="Echo"/>
+        <json:json-to-object-transformer doc:name="JSON to Object"/>
+        <enricher doc:name="Message Enricher" source="#[payload]" target="#[flowVars.token]">
+            <flow-ref name="get-token" doc:name="Flow Reference"/>
+        </enricher>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="Content-Type" value="application/json"/>
+            <add-message-property key="Authorization" value="#[flowVars.token]"/>
+        </message-properties-transformer>
+        <set-payload value="{&quot;To&quot;:{&quot;Address&quot;:&quot;#[json:toAddress]&quot;,&quot;SubscriberKey&quot;:&quot;#[json:toAddress]&quot;,&quot;ContactAttributes&quot;:{&quot;SubscriberAttributes&quot;:#[json:content/tokens]}}}" doc:name="Set Payload"/>
+        <https:outbound-endpoint exchange-pattern="request-response" host="www.exacttargetapis.com" port="443" path="messaging/v1/messageDefinitionSends/key:plp_gift_confirmation/send" method="POST" doc:name="Send Email"/>
+    </flow>
+    <flow name="get-token" doc:name="get-token">
+        <set-payload value="{&quot;clientId&quot;:&quot;nruq6ugrdk4ns2k6jtncbmyr&quot;,&quot;clientSecret&quot;:&quot;cqtPRCfbWU29FxMVhzzRxZaY&quot;}" doc:name="Set Payload"/>
+        <https:outbound-endpoint exchange-pattern="request-response" host="auth.exacttargetapis.com" port="443" path="v1/requestToken" method="POST" doc:name="Get Token"/>
+        <set-payload value="Bearer #[json:accessToken]" doc:name="Set Payload"/>
     </flow>
 </mule>
