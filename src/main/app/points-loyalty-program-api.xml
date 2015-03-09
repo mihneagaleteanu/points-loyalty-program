@@ -9,7 +9,8 @@
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd 
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/spring-security http://www.mulesoft.org/schema/mule/spring-security/current/mule-spring-security.xsd
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
     <db:generic-config name="PLPMEMBERS_Database_Configuration" url="${database.url}" driverClassName="org.postgresql.Driver" doc:name="Generic Database Configuration"/>
     <spring:beans>
@@ -30,7 +31,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         	<spring-security:http-security-filter realm="Enter valide user credentials to access the api service" securityProviders="memory-provider"/>
         </http:inbound-endpoint>
         <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","MEMBERID" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
+            <db:parameterized-query><![CDATA[select "FIRSTNAME","LASTNAME","POINTSEARNED","POINTSGRANTED","POINTSGIVEN","MEMBERID","PICTURE" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
         </db:select>
         <choice doc:name="Is Member Known?">
             <when expression="#[payload.size() == 1]">
