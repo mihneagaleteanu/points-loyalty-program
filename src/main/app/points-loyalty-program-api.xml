@@ -54,6 +54,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <set-variable variableName="pic" value="#[payload.get(&quot;pic&quot;).toString().replaceAll(&quot;\&quot;&quot;,&quot;&quot;)]" doc:name="Save PIC"/>
         <db:select config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
             <db:parameterized-query><![CDATA[select "MEMBERID","POINTSEARNED","POINTSGRANTED","POINTSGIVEN" from "PLPMEMBERS" where "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
+
         </db:select>
         <choice doc:name="Is Member Known?">
             <when expression="#[payload.size() == 1]">
@@ -112,6 +113,13 @@ VALUES (#[flowVars.transactionId],#[flowVars.member["MEMBERID"]],#[flowVars.amou
 VALUES (#[json:memberId],#[json:firstName],#[json:lastName],0,#[json:points],0,#[json:picture]);]]></db:parameterized-query>
 
         </db:insert>
+        <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Status&quot;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="unregister" doc:name="unregister">
+        <http:inbound-endpoint exchange-pattern="request-response" host="0.0.0.0" port="${http.port}" path="unregister" doc:name="HTTP"/>
+        <db:delete config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[DELETE FROM "PLPMEMBERS" WHERE "MEMBERID" = #[json:memberId]]]></db:parameterized-query>
+        </db:delete>
         <set-payload value="{&quot;status&quot;:&quot;success&quot;,&quot;statusMessage&quot;:&quot;Status&quot;}" doc:name="Set Payload"/>
     </flow>
 </mule>
