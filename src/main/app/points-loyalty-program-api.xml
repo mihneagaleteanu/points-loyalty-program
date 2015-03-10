@@ -60,7 +60,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
                 <set-variable variableName="member" value="#[payload[0]]" doc:name="Save Member"/>
                 <set-variable variableName="availablePoints" value="#[Integer.parseInt(flowVars.member.get(&quot;POINTSEARNED&quot;)+flowVars.member.get(&quot;POINTSGRANTED&quot;))]" doc:name="Calculate available points"/>
                 <choice doc:name="Does Member Have Sufficient Points?">
-                    <when expression="#[flowVars.amount &lt;= flowVars.availablePoints]">
+                    <when expression="#[flowVars.amount &gt;0 || -1*flowVars.amount &lt;= flowVars.availablePoints]">
                         <expression-component doc:name="Update Member"><![CDATA[flowVars.grantedPoints = flowVars.member["POINTSGRANTED"];
 flowVars.earnedPoints = flowVars.member["POINTSEARNED"];
 flowVars.givenPoints = flowVars.member["POINTSGIVEN"];
