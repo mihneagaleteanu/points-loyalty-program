@@ -18,6 +18,7 @@
 	<classpathentry kind="var" path="M2_REPO/postgresql/postgresql/9.0-801.jdbc4/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-tx/3.0.6.RELEASE/spring-tx-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-web/3.0.6.RELEASE/spring-web-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/sshd/sshd-core/0.6.0/sshd-core-0.6.0.jar"/>
 	<classpathentry kind="src" path="mappings"/>

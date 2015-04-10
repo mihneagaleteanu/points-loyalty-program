@@ -86,7 +86,7 @@ SET "POINTSEARNED"=#[flowVars.earnedPoints], "POINTSGRANTED"=#[flowVars.grantedP
 WHERE "MEMBERID"=#[flowVars.member["MEMBERID"]];]]></db:parameterized-query>
 
                         </db:update>
-                        <set-variable variableName="transactionId" value="#[function:uuid] " doc:name="Generate UUID"/>
+                        <set-variable variableName="transactionId" value="#[java.util.UUID.randomUUID().toString().trim()]" doc:name="Generate UUID"/>
                         <db:insert config-ref="PLPMEMBERS_Database_Configuration" doc:name="Database">
                             <db:parameterized-query><![CDATA[INSERT INTO "PLPTRANSACTIONS" ("TRANSACTIONID","MEMBERID","AMOUNT","PIC")
 VALUES (#[flowVars.transactionId],#[flowVars.member["MEMBERID"]],#[flowVars.amount],#[flowVars.pic]);]]></db:parameterized-query>
